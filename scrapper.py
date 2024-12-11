@@ -12,13 +12,8 @@ def fetch_atcoder(username, start_date, end_date):
     data = response.json() 
     solved = set() 
  
-    cnt = 0 
     for submission in data: 
-        if submission["result"] == "AC": 
-            cnt += 1 
-         
         epoch_time = submission["epoch_second"] 
- 
         if submission["result"] == "AC" and start_epoch <= epoch_time <= end_epoch: 
             problem_id = submission["problem_id"] 
             solved.add(problem_id) 
@@ -44,7 +39,7 @@ def fetch_codeforces(username, start_date, end_date):
 def fetch_vjudge(username, start_date, end_date): 
     solved = set() 
  
-    for i in range(0, 500, 20): 
+    for i in range(0, 200, 20): 
         url = f"https://vjudge.net/status/data?draw=1&start={i}&length=20&un={username}&OJId=All&probNum=&res=1&language=&onlyFollowee=false&orderBy=run_id&_=1733989696512" 
         response = requests.get(url) 
         data = response.json() 
