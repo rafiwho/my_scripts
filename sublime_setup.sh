@@ -2,10 +2,10 @@
 
 # Install g++
 sudo apt update
-sudo apt install -y g++
+sudo apt install g++ -y
 
 # Navigate to the directory and precompile stdc++.h
-cd /usr/include/x86_64-linux-gnu/c++/13/bits/
+cd /usr/include/x86_64-linux-gnu/c++/13/bits/    
 sudo g++ -std=c++20 stdc++.h
 
 # Set variables for the first repo
