@@ -5,14 +5,12 @@ param($file, $PATH)
 # TimeoutTime in Seconds, change according to your need
 # MaxOutputSize in Megabytes, change according to your need
 
-$input = 'C:\Users\Administrator\Desktop\codes\inputf.in'
+$input = 'C:\Users\Administrator\Desktop\codes\inputf.in'   
 $output = 'C:\Users\Administrator\Desktop\codes\outputf.in'
 
 $TimeoutTime = 1
 $MaxOutputSize = 1MB
 ###################################################################################
-
-
                         ### Cancel Previous Processes ###
 ###################################################################################
 $procs = Get-Content "$PSScriptRoot\running.in" -ErrorAction SilentlyContinue
@@ -27,10 +25,9 @@ Clear-Content $output
 $proc = Get-Process a -ErrorAction SilentlyContinue;
 if($proc) {$proc | kill}
 ###################################################################################
-
-
                         ### Prepare Current Build ###
 ###################################################################################
+
 $PATH = $PATH + '\a.exe';
 
 $inputP = "`"$input`""
