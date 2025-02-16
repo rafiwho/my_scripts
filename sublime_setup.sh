@@ -1,8 +1,38 @@
 #!/bin/bash
 
-# Install g++
+# Update package list
 sudo apt update
-sudo apt install g++ -y
+
+# Install required dependencies
+sudo apt install apt-transport-https ca-certificates curl g++ xclip -y
+
+# Add the Sublime Text GPG key
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
+
+# Add the Sublime Text stable repository
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+
+# Add the Sublime Merge stable repository
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-merge.list
+
+# Update apt sources
+sudo apt update
+
+# Install Sublime Text
+if ! command -v subl &> /dev/null; then
+    echo "Sublime Text not found, installing..."
+    sudo apt install sublime-text -y
+else
+    echo "Sublime Text is already installed."
+fi
+
+# Install Sublime Merge
+if ! command -v sublime-merge &> /dev/null; then
+    echo "Sublime Merge not found, installing..."
+    sudo apt install sublime-merge -y
+else
+    echo "Sublime Merge is already installed."
+fi
 
 # Navigate to the directory and precompile stdc++.h
 cd /usr/include/x86_64-linux-gnu/c++/13/bits/    
@@ -18,14 +48,21 @@ if [ -d "$HOME/.config/sublime-text-3/Packages/User" ]; then
 elif [ -d "$HOME/.config/sublime-text/Packages/User" ]; then
     destination_path1="$HOME/.config/sublime-text/Packages/User"
 else
-    echo "Sublime Text Packages/User directory not found."
-    exit 1
+    echo "Sublime Text Packages/User directory not found. Creating it..."
+    mkdir -p "$HOME/.config/sublime-text-3/Packages/User" || mkdir -p "$HOME/.config/sublime-text/Packages/User"
+    destination_path1="$HOME/.config/sublime-text-3/Packages/User"
 fi
 
 # Set variables for the second repo
 repo2_url="https://github.com/rafiwho/codes/archive/refs/heads/main.zip"
 download_path2="/home/rafiwho/Downloads"
 destination_path2="$HOME/codes"
+
+# Check if destination directory for the second repo exists, if not create it
+if [ ! -d "$destination_path2" ]; then
+    echo "Creating directory $destination_path2"
+    mkdir -p "$destination_path2"
+fi
 
 # Download the first repo as a zip file
 wget -O "$download_path1/User.zip" "$repo1_url"
@@ -60,3 +97,28 @@ mv "$download_path2/codes-main" "$destination_path2"
 
 # Remove the second zip file
 rm "$download_path2/codes.zip"
+
+# Merge the contents of both directories
+echo "Merging contents of User and codes directories into one directory..."
+cp -r "$destination_path1"/* "$destination_path2"
+
+# Now the contents from "User" are merged into the "codes" directory
+echo "Merge complete."
+
+# Generate SSH key if it doesn't already exist
+if [ ! -f "$HOME/.ssh/id_rsa" ]; then
+    echo "Generating SSH key..."
+    ssh-keygen -t rsa -b 4096 -C "uodoyhossanrafi420@gmail.com" -f "$HOME/.ssh/id_rsa" -N ""
+else
+    echo "SSH key already exists."
+fi
+
+# Add SSH key to the SSH agent
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
+# Copy the SSH public key to clipboard
+echo "Copying SSH public key to clipboard..."
+cat ~/.ssh/id_rsa.pub | xclip -selection clipboard
+
+echo "SSH key generated and copied to clipboard."
